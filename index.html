@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f6f2">
+  <title>Can I Sit Here?</title>
+  <style>
+    :root { color-scheme: light; --paper:#f7f6f2; --ink:#171715; }
+    * { box-sizing:border-box; }
+    html { background:var(--paper); scrollbar-width:none; }
+    html::-webkit-scrollbar { display:none; }
+    body { margin:0; min-height:300vh; background:var(--paper); color:var(--ink); font-family:Arial, Helvetica, sans-serif; }
+    .viewport { position:sticky; top:0; height:100svh; overflow:hidden; isolation:isolate; }
+    .title { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; margin:0; padding:4vw; font-size:clamp(4.5rem, 12.6vw, 13.5rem); line-height:.9; letter-spacing:-.082em; font-weight:600; white-space:nowrap; transform:translate3d(var(--title-x,0),0,0); will-change:transform; }
+    .stair-scene { position:absolute; inset:0; opacity:var(--stair-opacity,0); transform:translate3d(var(--stair-x,110vw),0,0); pointer-events:none; will-change:transform,opacity; }
+    .stair-canvas { display:block; width:100%; height:100%; }
+    .poem { position:absolute; inset:0; opacity:var(--poem-opacity,0); pointer-events:none; }
+    .line { position:absolute; left:var(--left); top:var(--top); width:var(--width); margin:0; font-size:clamp(16px,1.7vw,30px); line-height:1.15; letter-spacing:-.025em; white-space:nowrap; transform:translate3d(var(--enter,110vw),0,0); will-change:transform; }
+    .line span { display:block; width:100%; overflow:hidden; text-align-last:justify; }
+    @media (max-width:700px) {
+      .title { font-size:15vw; letter-spacing:-.075em; }
+      .line { font-size:clamp(7px,1.8vw,12px); }
+    }
+    @media (prefers-reduced-motion:reduce) { body { min-height:100svh; } .title { transform:translateX(-120vw); } .stair-scene { display:none; } .poem { opacity:1; } .line { transform:none; } }
+  </style>
+</head>
+<body>
+  <main class="viewport" aria-label="Can I Sit Here? An interactive reading">
+    <h1 class="title">Can I Sit Here?</h1>
+    <div class="stair-scene" role="img" aria-label="A three-dimensional, three-step staircase that rotates as the page scrolls">
+      <canvas class="stair-canvas" aria-hidden="true"></canvas>
+    </div>
+    <div class="poem" aria-label="An excerpt adapted from the editor's letter">
+      <p class="line" style="--left:15%;--top:21%;--width:55%"><span>Can I Sit Here? began with a simple habit: noticing where people sit while walking</span></p>
+      <p class="line" style="--left:15%;--top:25.5%;--width:55%"><span>through the city. At first, I photographed chairs. Then I began to notice the</span></p>
+      <p class="line" style="--left:15%;--top:30%;--width:55%"><span>steps, low walls, and edges of planters that people used in the same way. These</span></p>
+      <p class="line" style="--left:23%;--top:36%;--width:55%"><span>everyday surfaces became places to pause, even though sitting was not their</span></p>
+      <p class="line" style="--left:23%;--top:40.5%;--width:55%"><span>intended purpose. As I kept looking, my attention shifted from the seats to</span></p>
+      <p class="line" style="--left:23%;--top:45%;--width:55%"><span>what happened around them. People sat beside friends, gathered on steps, and</span></p>
+      <p class="line" style="--left:31%;--top:51%;--width:55%"><span>stayed to talk. A place to rest could also become a place to spend time together.</span></p>
+      <p class="line" style="--left:31%;--top:55.5%;--width:55%"><span>Some surfaces are made to move us along, yet people find reasons to remain.</span></p>
+      <p class="line" style="--left:31%;--top:60%;--width:55%"><span>A few minutes of sitting changes how a street is seen. The steps still lead</span></p>
+      <p class="line" style="--left:39%;--top:66%;--width:55%"><span>somewhere, but they can also hold a conversation, a pause, and a shared view.</span></p>
+      <p class="line" style="--left:39%;--top:70.5%;--width:55%"><span>It asks us to notice how people use what the city already offers, and to consider</span></p>
+      <p class="line" style="--left:39%;--top:75%;--width:55%"><span>those habits when designing its future. We need room to stop, rest, and connect.</span></p>
+    </div>
+  </main>
+  <script>
+    const root = document.documentElement;
+    const lines = [...document.querySelectorAll('.line')];
+    const stairCanvas = document.querySelector('.stair-canvas');
+    const stairContext = stairCanvas.getContext('2d');
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+    const clamp = (n, a=0, b=1) => Math.min(b, Math.max(a, n));
+    const ease = n => 1 - Math.pow(1 - clamp(n), 3);
+    const easeLine = n => { const t=clamp(n); return t*t*(3-2*t); };
+    const profile = [
+      [-105,-260],[-105,0],[-35,0],[-35,130],
+      [35,130],[35,260],[105,260],[105,-260]
+    ];
+    const vertices = [-310,310].flatMap(x => profile.map(([y,z]) => [x,y,z]));
+    const surfaces = [
+      {indices:[0,1,2,3,4,5,6,7],fill:'#eeede9'},
+      {indices:[15,14,13,12,11,10,9,8],fill:'#eeede9'},
+      ...profile.map((_,i) => ({
+        indices:[i,i+8,(i+1)%8+8,(i+1)%8],
+        fill:i%2===0 ? '#fffefa' : '#f7f6f2'
+      }))
+    ];
+    function drawStair(travel) {
+      const width = stairCanvas.clientWidth;
+      const height = stairCanvas.clientHeight;
+      const pixelRatio = Math.min(devicePixelRatio || 1,2);
+      if (stairCanvas.width !== Math.round(width*pixelRatio) || stairCanvas.height !== Math.round(height*pixelRatio)) {
+        stairCanvas.width = Math.round(width*pixelRatio);
+        stairCanvas.height = Math.round(height*pixelRatio);
+      }
+      stairContext.setTransform(pixelRatio,0,0,pixelRatio,0,0);
+      stairContext.clearRect(0,0,width,height);
+      if (travel <= 0 || travel >= 1) return;
+      const yawDegrees = travel < .5
+        ? -105 + 100*easeLine(travel*2)
+        : -5 + 25*easeLine((travel-.5)*2);
+      const yaw = yawDegrees * Math.PI / 180;
+      const pitch = (-22 + 5*Math.sin(travel*Math.PI)) * Math.PI / 180;
+      const cy = Math.cos(yaw), sy = Math.sin(yaw);
+      const cx = Math.cos(pitch), sx = Math.sin(pitch);
+      const modelScale = Math.min(1.28,width/900,height/650);
+      const turned = vertices.map(([x,y,z]) => {
+        const tx = x*cy + z*sy;
+        const tz = -x*sy + z*cy;
+        return [tx,y*cx-tz*sx,y*sx+tz*cx];
+      });
+      const projected = turned.map(([x,y,z]) => {
+        const perspective = 1200/(1200-z);
+        return [width/2+x*perspective*modelScale,height/2+y*perspective*modelScale];
+      });
+      const visible = surfaces.map(surface => {
+        const [a,b,c] = surface.indices.map(i => turned[i]);
+        const ux=b[0]-a[0],uy=b[1]-a[1],uz=b[2]-a[2];
+        const vx=c[0]-a[0],vy=c[1]-a[1],vz=c[2]-a[2];
+        const front = ux*vy-uy*vx > 0;
+        const depth = surface.indices.reduce((sum,i)=>sum+turned[i][2],0)/surface.indices.length;
+        return {...surface,front,depth};
+      }).filter(surface=>surface.front).sort((a,b)=>a.depth-b.depth);
+      stairContext.lineWidth = 2.7;
+      stairContext.lineJoin = 'round';
+      stairContext.strokeStyle = '#171715';
+      for (const surface of visible) {
+        stairContext.beginPath();
+        surface.indices.forEach((i,n) => {
+          const [x,y] = projected[i];
+          if (n===0) stairContext.moveTo(x,y);
+          else stairContext.lineTo(x,y);
+        });
+        stairContext.closePath();
+        stairContext.fillStyle = surface.fill;
+        stairContext.fill();
+        stairContext.stroke();
+      }
+      // Restore only the short tread edges on the visible side. Drawing the
+      // entire side outline here would reveal back edges through the stairs.
+      const visibleSide = visible.find(surface => surface.indices.length === profile.length);
+      if (visibleSide) {
+        const sideOffset = visibleSide.indices.includes(8) ? 8 : 0;
+        for (const [a,b] of [[2,3],[4,5]]) {
+          stairContext.beginPath();
+          stairContext.moveTo(...projected[sideOffset+a]);
+          stairContext.lineTo(...projected[sideOffset+b]);
+          stairContext.stroke();
+        }
+      }
+    }
+    let frame = 0;
+    let displayedProgress = null;
+    let lastTime = 0;
+    function render(now = 0) {
+      frame = 0;
+      const max = document.body.scrollHeight - innerHeight;
+      const targetProgress = max ? clamp(scrollY / max) : 0;
+      if (displayedProgress === null || reduced.matches) {
+        displayedProgress = targetProgress;
+      } else {
+        const elapsed = lastTime ? Math.min(now - lastTime, 48) : 16;
+        const glide = 1 - Math.exp(-elapsed / 190);
+        displayedProgress += (targetProgress - displayedProgress) * glide;
+        if (Math.abs(targetProgress - displayedProgress) < .00008) {
+          displayedProgress = targetProgress;
+        }
+      }
+      lastTime = now;
+      if (reduced.matches) return;
+      const progress = displayedProgress;
+      const titleShift = easeLine(progress / .38) * -125;
+      root.style.setProperty('--title-x', `${titleShift}vw`);
+      const stairTravel = clamp((progress - .20) / .34);
+      root.style.setProperty('--stair-x', `${85 - 205 * stairTravel}vw`);
+      root.style.setProperty('--stair-opacity', String(clamp(stairTravel / .12) * clamp((1 - stairTravel) / .12)));
+      drawStair(stairTravel);
+      root.style.setProperty('--poem-opacity', clamp((progress - .52) / .08));
+      lines.forEach((line, index) => {
+        const start = .51 + index * .022;
+        const arrival = easeLine((progress - start) / .24);
+        line.style.setProperty('--enter', `${(1 - arrival) * 108}vw`);
+      });
+      if (displayedProgress !== targetProgress) frame = requestAnimationFrame(render);
+    }
+    function schedule() {
+      if (!frame) {
+        lastTime = 0;
+        frame = requestAnimationFrame(render);
+      }
+    }
+    addEventListener('scroll', schedule, {passive:true});
+    addEventListener('resize', schedule);
+    reduced.addEventListener('change', render);
+    render();
+  </script>
+</body>
+</html>
