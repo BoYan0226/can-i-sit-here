@@ -19,14 +19,25 @@
     .page-cube { position:absolute; inset:0; transform-style:preserve-3d; transform:translateZ(-50svh) rotateX(var(--cube-angle,0deg)); will-change:transform; }
     .cube-face { position:absolute; inset:0; overflow:hidden; backface-visibility:hidden; }
     .poem { background:var(--paper); transform:translateZ(50svh); }
-    .next-page { display:flex; flex-direction:column; justify-content:space-between; padding:clamp(30px,5vw,90px); background:#eeece6; transform:rotateX(90deg) translateZ(50svh); }
-    .next-label { margin:0; font-size:clamp(11px,1vw,16px); letter-spacing:.18em; text-transform:uppercase; }
-    .next-heading { margin:auto 0; font-size:clamp(3rem,10vw,11rem); line-height:.85; letter-spacing:-.08em; font-weight:600; }
-    .next-copy { align-self:flex-end; max-width:26rem; margin:0; font-size:clamp(14px,1.4vw,22px); line-height:1.25; }
+    .next-page { display:grid; grid-template-rows:auto minmax(0,1fr) auto; gap:clamp(10px,1.6vh,22px); padding:clamp(22px,3.2vw,56px); background:#eeece6; transform:rotateX(90deg) translateZ(50svh); }
+    .gallery-head { display:flex; align-items:end; justify-content:space-between; gap:2rem; }
+    .next-label { margin:0; font-size:clamp(10px,.9vw,14px); letter-spacing:.18em; text-transform:uppercase; }
+    .next-heading { margin:0; font-size:clamp(2.5rem,5.2vw,6.5rem); line-height:.82; letter-spacing:-.07em; font-weight:600; text-align:right; }
+    .photo-sequence { display:grid; grid-template-columns:1.35fr 1fr 1fr .9fr; align-items:end; gap:clamp(8px,1vw,18px); min-height:0; }
+    .photo-card { display:grid; grid-template-rows:minmax(0,1fr) auto; gap:7px; height:var(--photo-height); min-width:0; min-height:0; margin:0; }
+    .photo-card img { display:block; width:100%; height:100%; min-height:0; object-fit:cover; filter:grayscale(1) contrast(1.12); }
+    .photo-card figcaption { font-size:clamp(9px,.7vw,12px); letter-spacing:.1em; text-transform:uppercase; white-space:nowrap; }
+    .photo-credit { margin:0; font-size:clamp(9px,.7vw,12px); letter-spacing:.08em; text-transform:uppercase; }
     .line { position:absolute; left:var(--left); top:var(--top); width:var(--width); margin:0; font-size:var(--poem-font,clamp(16px,1.7vw,30px)); line-height:1.15; letter-spacing:-.025em; white-space:nowrap; transform:translate3d(var(--enter,110vw),0,0); will-change:transform; }
     .line span { display:block; width:100%; text-align-last:justify; }
     @media (max-width:700px) {
       .title { font-size:15vw; letter-spacing:-.075em; }
+      .next-page { gap:10px; padding:18px; }
+      .gallery-head { align-items:start; gap:8px; }
+      .next-heading { font-size:clamp(2rem,8vw,3rem); }
+      .photo-sequence { grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:8px; }
+      .photo-card { height:100%; }
+      .photo-card figcaption { font-size:8px; }
     }
     @media (prefers-reduced-motion:reduce) {
       body { min-height:0; }
@@ -61,10 +72,18 @@
       <p class="line" style="--left:39%;--top:70.5%;--width:55%"><span>It asks us to notice how people use what the city already offers, and to consider</span></p>
       <p class="line" style="--left:39%;--top:75%;--width:55%"><span>those habits when designing its future. We need room to stop, rest, and connect.</span></p>
         </div>
-        <section class="next-page cube-face" aria-label="A place to pause">
-          <p class="next-label">Can I Sit Here? / 02</p>
-          <h2 class="next-heading">STAY<br>A WHILE.</h2>
-          <p class="next-copy">A place made for moving can also become a place to pause.</p>
+        <section class="next-page cube-face" aria-label="Conversations on New York steps">
+          <header class="gallery-head">
+            <p class="next-label">Can I Sit Here? / 02<br>New York City</p>
+            <h2 class="next-heading">STEPS<br>AS SEATS.</h2>
+          </header>
+          <div class="photo-sequence" aria-label="Four photographs of people sitting and talking on steps">
+            <figure class="photo-card" style="--photo-height:100%"><img src="nyc-steps-6140437.jpg" alt="Three friends talking on the steps of the New York Public Library"><figcaption>01 / Gather</figcaption></figure>
+            <figure class="photo-card" style="--photo-height:89%"><img src="nyc-steps-6140430.jpg" alt="Two friends chatting over coffee on the library steps"><figcaption>02 / Talk</figcaption></figure>
+            <figure class="photo-card" style="--photo-height:78%"><img src="nyc-steps-6141093.jpg" alt="Close view of two friends smiling together on the steps"><figcaption>03 / Listen</figcaption></figure>
+            <figure class="photo-card" style="--photo-height:67%"><img src="nyc-steps-6140428.jpg" alt="Hands, coffee cups, and a conversation on the stairs"><figcaption>04 / Pause</figcaption></figure>
+          </div>
+          <p class="photo-credit">New York Public Library steps, Manhattan · Photographs by William Fortunato / Pexels</p>
         </section>
       </div>
     </div>
