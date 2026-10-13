@@ -10,13 +10,13 @@
     * { box-sizing:border-box; }
     html { background:var(--paper); scrollbar-width:none; }
     html::-webkit-scrollbar { display:none; }
-    body { margin:0; min-height:440vh; background:var(--paper); color:var(--ink); font-family:Arial, Helvetica, sans-serif; }
+    body { margin:0; min-height:790vh; background:var(--paper); color:var(--ink); font-family:Arial, Helvetica, sans-serif; }
     .viewport { position:sticky; top:0; height:100svh; overflow:hidden; isolation:isolate; }
     .title { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; margin:0; padding:4vw; font-size:clamp(4.5rem, 12.6vw, 13.5rem); line-height:.9; letter-spacing:-.082em; font-weight:600; white-space:nowrap; transform:translate3d(var(--title-x,0),0,0); will-change:transform; }
     .stair-scene { position:absolute; inset:0; opacity:var(--stair-opacity,0); transform:translate3d(var(--stair-x,110vw),0,0); pointer-events:none; will-change:transform,opacity; }
     .stair-canvas { display:block; width:100%; height:100%; }
     .cube-stage { position:absolute; inset:0; perspective:1200px; opacity:var(--poem-opacity,0); pointer-events:none; }
-    .page-cube { position:absolute; inset:0; transform-style:preserve-3d; transform:translateZ(-50svh) rotateX(var(--cube-angle,0deg)); will-change:transform; }
+    .page-cube { position:absolute; inset:0; transform-style:preserve-3d; }
     .cube-face { position:absolute; inset:0; overflow:hidden; backface-visibility:hidden; }
     .poem { background:var(--paper); transform:translateZ(50svh); }
     .next-page { display:grid; grid-template-rows:minmax(0,1fr) auto; gap:clamp(12px,2vh,24px); padding:clamp(22px,3.2vw,56px); background:var(--paper); transform:rotateX(90deg) translateZ(50svh); }
@@ -26,6 +26,11 @@
     .photo-credit { margin:0; font-size:clamp(9px,.7vw,12px); letter-spacing:.08em; text-transform:uppercase; opacity:var(--credit-reveal,0); transform:translate3d(0,calc((1 - var(--credit-reveal,0))*2.5rem),0); will-change:transform,opacity; }
     .line { position:absolute; left:var(--left); top:var(--top); width:var(--width); margin:0; font-size:var(--poem-font,clamp(16px,1.7vw,30px)); line-height:1.15; letter-spacing:-.025em; white-space:nowrap; transform:translate3d(var(--enter,110vw),0,0); will-change:transform; }
     .line span { display:block; width:100%; text-align-last:justify; }
+    .ending, .return-page { background:var(--paper); visibility:hidden; }
+    .ending { display:flex; flex-direction:column; justify-content:center; padding:8vw; }
+    .ending h2 { margin:0; font-size:clamp(32px,5.6vw,90px); font-weight:500; line-height:1.12; letter-spacing:-.055em; }
+    .ending-question { margin:8vh 0 0; font-size:clamp(16px,1.8vw,28px); letter-spacing:-.02em; }
+    .return-page .title { transform:none; }
     @media (max-width:700px) {
       .title { font-size:15vw; letter-spacing:-.075em; }
       .next-page { gap:10px; padding:18px; }
@@ -41,6 +46,8 @@
       .cube-face { min-height:100svh; backface-visibility:visible; }
       .line { transform:none; }
       .photo-card, .photo-credit { opacity:1; transform:none; }
+      .cube-face { visibility:visible !important; transform:none !important; }
+      .return-page { display:none; }
     }
   </style>
 </head>
@@ -53,18 +60,18 @@
     <div class="cube-stage">
       <div class="page-cube">
         <div class="poem cube-face" aria-label="An excerpt adapted from the editor's letter">
-      <p class="line" style="--left:15%;--top:21%;--width:55%"><span>Can I Sit Here? began with a simple habit: noticing where people sit while walking</span></p>
-      <p class="line" style="--left:15%;--top:25.5%;--width:55%"><span>through the city. At first, I photographed chairs. Then I began to notice the</span></p>
-      <p class="line" style="--left:15%;--top:30%;--width:55%"><span>steps, low walls, and edges of planters that people used in the same way. These</span></p>
-      <p class="line" style="--left:23%;--top:36%;--width:55%"><span>everyday surfaces became places to pause, even though sitting was not their</span></p>
-      <p class="line" style="--left:23%;--top:40.5%;--width:55%"><span>intended purpose. As I kept looking, my attention shifted from the seats to</span></p>
-      <p class="line" style="--left:23%;--top:45%;--width:55%"><span>what happened around them. People sat beside friends, gathered on steps, and</span></p>
-      <p class="line" style="--left:31%;--top:51%;--width:55%"><span>stayed to talk. A place to rest could also become a place to spend time together.</span></p>
-      <p class="line" style="--left:31%;--top:55.5%;--width:55%"><span>Some surfaces are made to move us along, yet people find reasons to remain.</span></p>
-      <p class="line" style="--left:31%;--top:60%;--width:55%"><span>A few minutes of sitting changes how a street is seen. The steps still lead</span></p>
-      <p class="line" style="--left:39%;--top:66%;--width:55%"><span>somewhere, but they can also hold a conversation, a pause, and a shared view.</span></p>
-      <p class="line" style="--left:39%;--top:70.5%;--width:55%"><span>It asks us to notice how people use what the city already offers, and to consider</span></p>
-      <p class="line" style="--left:39%;--top:75%;--width:55%"><span>those habits when designing its future. We need room to stop, rest, and connect.</span></p>
+      <p class="line" style="--left:15%;--top:21%;--width:55%"><span>A staircase takes us from one place to another.</span></p>
+      <p class="line" style="--left:15%;--top:25.5%;--width:55%"><span>But sometimes, we stop halfway.</span></p>
+      <p class="line" style="--left:15%;--top:30%;--width:55%"><span>We sit beside a friend, set down a bag, and start talking.</span></p>
+      <p class="line" style="--left:23%;--top:36%;--width:55%"><span>The steps become a place to stay.</span></p>
+      <p class="line" style="--left:23%;--top:40.5%;--width:55%"><span>Nothing has been added. Nothing has been rebuilt.</span></p>
+      <p class="line" style="--left:23%;--top:45%;--width:55%"><span>A different use begins with the simple act of sitting down.</span></p>
+      <p class="line" style="--left:31%;--top:51%;--width:55%"><span>Across the city, people make these small adjustments.</span></p>
+      <p class="line" style="--left:31%;--top:55.5%;--width:55%"><span>A low wall becomes a seat. An edge becomes a meeting place.</span></p>
+      <p class="line" style="--left:31%;--top:60%;--width:55%"><span>What was already there begins to offer something more.</span></p>
+      <p class="line" style="--left:39%;--top:66%;--width:55%"><span>Can I Sit Here? begins with noticing these moments.</span></p>
+      <p class="line" style="--left:39%;--top:70.5%;--width:55%"><span>The city gives us spaces, and we give them uses.</span></p>
+      <p class="line" style="--left:39%;--top:75%;--width:55%"><span>Sometimes, a place changes when we decide to stay.</span></p>
         </div>
         <section class="next-page cube-face" aria-label="Conversations on New York steps">
           <div class="photo-sequence" aria-label="Four photographs of people sitting and talking on steps">
@@ -75,6 +82,13 @@
           </div>
           <p class="photo-credit">New York Public Library steps, Manhattan · Photographs by William Fortunato / Pexels</p>
         </section>
+        <section class="ending cube-face" aria-label="A place to stay">
+          <h2>The steps still lead somewhere.<br>We just stayed for a while.</h2>
+          <p class="ending-question">What else could this place be?</p>
+        </section>
+        <div class="return-page cube-face" aria-hidden="true">
+          <div class="title">Can I Sit Here?</div>
+        </div>
       </div>
     </div>
   </main>
@@ -82,6 +96,17 @@
     const root = document.documentElement;
     const lines = [...document.querySelectorAll('.line')];
     const photos = [...document.querySelectorAll('.photo-card')];
+    const poemFace = document.querySelector('.poem');
+    const photoFace = document.querySelector('.next-page');
+    const endingFace = document.querySelector('.ending');
+    const returnFace = document.querySelector('.return-page');
+    const faces = [poemFace, photoFace, endingFace, returnFace];
+    function turnFaces(outgoing, incoming, axis, direction, turn) {
+      const depth = (axis === 'Y' ? innerWidth : innerHeight) / 2;
+      faces.forEach(face => { face.style.visibility = face === outgoing || face === incoming ? 'visible' : 'hidden'; });
+      outgoing.style.transform = `translateZ(${-depth}px) rotate${axis}(${direction*90*turn}deg) translateZ(${depth}px)`;
+      incoming.style.transform = `translateZ(${-depth}px) rotate${axis}(${direction*90*(turn-1)}deg) translateZ(${depth}px)`;
+    }
     const stairCanvas = document.querySelector('.stair-canvas');
     const stairContext = stairCanvas.getContext('2d');
     const reduced = matchMedia('(prefers-reduced-motion: reduce)');
@@ -204,6 +229,14 @@
       }
       lastTime = now;
       if (reduced.matches) return;
+      // The return face matches the opening title exactly, so the scroll reset
+      // happens only after its rotation is complete and is visually seamless.
+      if (displayedProgress >= 6.85 && targetProgress >= 6.85) {
+        displayedProgress = 0;
+        scrollTo({top:0, behavior:'instant'});
+        render(now);
+        return;
+      }
       const progress = clamp(displayedProgress / 2);
       const titleShift = easeLine(progress / .38) * -125;
       root.style.setProperty('--title-x', `${titleShift}vw`);
@@ -218,7 +251,13 @@
         line.style.setProperty('--enter', `${(1 - arrival) * 108}vw`);
       });
       const cubeTurn = easeLine((displayedProgress - 2) / 1.1);
-      root.style.setProperty('--cube-angle', `${-90 * cubeTurn}deg`);
+      if (displayedProgress <= 3.65) {
+        turnFaces(poemFace, photoFace, 'X', -1, cubeTurn);
+      } else if (displayedProgress <= 5.7) {
+        turnFaces(photoFace, endingFace, 'Y', 1, easeLine((displayedProgress - 3.65) / 1.15));
+      } else {
+        turnFaces(endingFace, returnFace, 'X', 1, easeLine((displayedProgress - 5.7) / 1.1));
+      }
       photos.forEach((photo, index) => {
         const reveal = easeLine((displayedProgress - 2.2 - index * .14) / .45);
         photo.style.setProperty('--reveal', reveal);
