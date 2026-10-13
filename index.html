@@ -10,18 +10,33 @@
     * { box-sizing:border-box; }
     html { background:var(--paper); scrollbar-width:none; }
     html::-webkit-scrollbar { display:none; }
-    body { margin:0; min-height:300vh; background:var(--paper); color:var(--ink); font-family:Arial, Helvetica, sans-serif; }
+    body { margin:0; min-height:440vh; background:var(--paper); color:var(--ink); font-family:Arial, Helvetica, sans-serif; }
     .viewport { position:sticky; top:0; height:100svh; overflow:hidden; isolation:isolate; }
     .title { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; margin:0; padding:4vw; font-size:clamp(4.5rem, 12.6vw, 13.5rem); line-height:.9; letter-spacing:-.082em; font-weight:600; white-space:nowrap; transform:translate3d(var(--title-x,0),0,0); will-change:transform; }
     .stair-scene { position:absolute; inset:0; opacity:var(--stair-opacity,0); transform:translate3d(var(--stair-x,110vw),0,0); pointer-events:none; will-change:transform,opacity; }
     .stair-canvas { display:block; width:100%; height:100%; }
-    .poem { position:absolute; inset:0; opacity:var(--poem-opacity,0); pointer-events:none; }
+    .cube-stage { position:absolute; inset:0; perspective:1200px; opacity:var(--poem-opacity,0); pointer-events:none; }
+    .page-cube { position:absolute; inset:0; transform-style:preserve-3d; transform:translateZ(-50svh) rotateX(var(--cube-angle,0deg)); will-change:transform; }
+    .cube-face { position:absolute; inset:0; overflow:hidden; backface-visibility:hidden; }
+    .poem { background:var(--paper); transform:translateZ(50svh); }
+    .next-page { display:flex; flex-direction:column; justify-content:space-between; padding:clamp(30px,5vw,90px); background:#eeece6; transform:rotateX(90deg) translateZ(50svh); }
+    .next-label { margin:0; font-size:clamp(11px,1vw,16px); letter-spacing:.18em; text-transform:uppercase; }
+    .next-heading { margin:auto 0; font-size:clamp(3rem,10vw,11rem); line-height:.85; letter-spacing:-.08em; font-weight:600; }
+    .next-copy { align-self:flex-end; max-width:26rem; margin:0; font-size:clamp(14px,1.4vw,22px); line-height:1.25; }
     .line { position:absolute; left:var(--left); top:var(--top); width:var(--width); margin:0; font-size:var(--poem-font,clamp(16px,1.7vw,30px)); line-height:1.15; letter-spacing:-.025em; white-space:nowrap; transform:translate3d(var(--enter,110vw),0,0); will-change:transform; }
     .line span { display:block; width:100%; text-align-last:justify; }
     @media (max-width:700px) {
       .title { font-size:15vw; letter-spacing:-.075em; }
     }
-    @media (prefers-reduced-motion:reduce) { body { min-height:100svh; } .title { transform:translateX(-120vw); } .stair-scene { display:none; } .poem { opacity:1; } .line { transform:none; } }
+    @media (prefers-reduced-motion:reduce) {
+      body { min-height:0; }
+      .viewport { position:relative; height:auto; overflow:visible; }
+      .title, .stair-scene { display:none; }
+      .cube-stage, .page-cube, .cube-face { position:relative; inset:auto; transform:none; }
+      .cube-stage { opacity:1; perspective:none; }
+      .cube-face { min-height:100svh; backface-visibility:visible; }
+      .line { transform:none; }
+    }
   </style>
 </head>
 <body>
@@ -30,7 +45,9 @@
     <div class="stair-scene" role="img" aria-label="A three-dimensional, three-step staircase that rotates as the page scrolls">
       <canvas class="stair-canvas" aria-hidden="true"></canvas>
     </div>
-    <div class="poem" aria-label="An excerpt adapted from the editor's letter">
+    <div class="cube-stage">
+      <div class="page-cube">
+        <div class="poem cube-face" aria-label="An excerpt adapted from the editor's letter">
       <p class="line" style="--left:15%;--top:21%;--width:55%"><span>Can I Sit Here? began with a simple habit: noticing where people sit while walking</span></p>
       <p class="line" style="--left:15%;--top:25.5%;--width:55%"><span>through the city. At first, I photographed chairs. Then I began to notice the</span></p>
       <p class="line" style="--left:15%;--top:30%;--width:55%"><span>steps, low walls, and edges of planters that people used in the same way. These</span></p>
@@ -43,6 +60,13 @@
       <p class="line" style="--left:39%;--top:66%;--width:55%"><span>somewhere, but they can also hold a conversation, a pause, and a shared view.</span></p>
       <p class="line" style="--left:39%;--top:70.5%;--width:55%"><span>It asks us to notice how people use what the city already offers, and to consider</span></p>
       <p class="line" style="--left:39%;--top:75%;--width:55%"><span>those habits when designing its future. We need room to stop, rest, and connect.</span></p>
+        </div>
+        <section class="next-page cube-face" aria-label="A place to pause">
+          <p class="next-label">Can I Sit Here? / 02</p>
+          <h2 class="next-heading">STAY<br>A WHILE.</h2>
+          <p class="next-copy">A place made for moving can also become a place to pause.</p>
+        </section>
+      </div>
     </div>
   </main>
   <script>
@@ -142,8 +166,7 @@
     let lastTime = 0;
     function render(now = 0) {
       frame = 0;
-      const max = document.body.scrollHeight - innerHeight;
-      const targetProgress = max ? clamp(scrollY / max) : 0;
+      const targetProgress = scrollY / innerHeight;
       if (displayedProgress === null || reduced.matches) {
         displayedProgress = targetProgress;
       } else {
@@ -156,7 +179,7 @@
       }
       lastTime = now;
       if (reduced.matches) return;
-      const progress = displayedProgress;
+      const progress = clamp(displayedProgress / 2);
       const titleShift = easeLine(progress / .38) * -125;
       root.style.setProperty('--title-x', `${titleShift}vw`);
       const stairTravel = clamp((progress - .20) / .34);
@@ -169,6 +192,8 @@
         const arrival = easeLine((progress - start) / .24);
         line.style.setProperty('--enter', `${(1 - arrival) * 108}vw`);
       });
+      const cubeTurn = easeLine((displayedProgress - 2) / 1.1);
+      root.style.setProperty('--cube-angle', `${-90 * cubeTurn}deg`);
       if (displayedProgress !== targetProgress) frame = requestAnimationFrame(render);
     }
     function schedule() {
