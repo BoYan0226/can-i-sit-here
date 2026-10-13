@@ -16,11 +16,10 @@
     .stair-scene { position:absolute; inset:0; opacity:var(--stair-opacity,0); transform:translate3d(var(--stair-x,110vw),0,0); pointer-events:none; will-change:transform,opacity; }
     .stair-canvas { display:block; width:100%; height:100%; }
     .poem { position:absolute; inset:0; opacity:var(--poem-opacity,0); pointer-events:none; }
-    .line { position:absolute; left:var(--left); top:var(--top); width:var(--width); margin:0; font-size:clamp(16px,1.7vw,30px); line-height:1.15; letter-spacing:-.025em; white-space:nowrap; transform:translate3d(var(--enter,110vw),0,0); will-change:transform; }
-    .line span { display:block; width:100%; overflow:hidden; text-align-last:justify; }
+    .line { position:absolute; left:var(--left); top:var(--top); width:var(--width); margin:0; font-size:var(--poem-font,clamp(16px,1.7vw,30px)); line-height:1.15; letter-spacing:-.025em; white-space:nowrap; transform:translate3d(var(--enter,110vw),0,0); will-change:transform; }
+    .line span { display:block; width:100%; text-align-last:justify; }
     @media (max-width:700px) {
       .title { font-size:15vw; letter-spacing:-.075em; }
-      .line { font-size:clamp(7px,1.8vw,12px); }
     }
     @media (prefers-reduced-motion:reduce) { body { min-height:100svh; } .title { transform:translateX(-120vw); } .stair-scene { display:none; } .poem { opacity:1; } .line { transform:none; } }
   </style>
@@ -55,6 +54,12 @@
     const clamp = (n, a=0, b=1) => Math.min(b, Math.max(a, n));
     const ease = n => 1 - Math.pow(1 - clamp(n), 3);
     const easeLine = n => { const t=clamp(n); return t*t*(3-2*t); };
+    function fitLines() {
+      root.style.removeProperty('--poem-font');
+      const size = parseFloat(getComputedStyle(lines[0]).fontSize);
+      const ratio = Math.max(1, ...lines.map(line => line.firstElementChild.scrollWidth / line.clientWidth));
+      root.style.setProperty('--poem-font', `${size / ratio * .98}px`);
+    }
     const profile = [
       [-105,-260],[-105,0],[-35,0],[-35,130],
       [35,130],[35,260],[105,260],[105,-260]
@@ -173,8 +178,9 @@
       }
     }
     addEventListener('scroll', schedule, {passive:true});
-    addEventListener('resize', schedule);
+    addEventListener('resize', () => { fitLines(); schedule(); });
     reduced.addEventListener('change', render);
+    fitLines();
     render();
   </script>
 </body>
