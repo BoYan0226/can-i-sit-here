@@ -142,7 +142,9 @@
         const front = ux*vy-uy*vx > 0;
         const depth = surface.indices.reduce((sum,i)=>sum+turned[i][2],0)/surface.indices.length;
         return {...surface,front,depth};
-      }).filter(surface=>surface.front).sort((a,b)=>a.depth-b.depth);
+      }).filter(surface=>surface.front).sort((a,b)=>
+        Number(b.indices.length===profile.length)-Number(a.indices.length===profile.length) || a.depth-b.depth
+      );
       stairContext.lineWidth = 2.7;
       stairContext.lineJoin = 'round';
       stairContext.strokeStyle = '#171715';
@@ -156,7 +158,20 @@
         stairContext.closePath();
         stairContext.fillStyle = surface.fill;
         stairContext.fill();
-        stairContext.stroke();
+        // The long back edge of the side profile is hidden behind the steps.
+        // Outlining it makes a stray vertical line inside the upper corner.
+        if (surface.indices.length === profile.length && surface.indices.includes(8)) {
+          surface.indices.forEach((a,n) => {
+            const b = surface.indices[(n+1)%surface.indices.length];
+            if ((a===8 && b===15) || (a===15 && b===8)) return;
+            stairContext.beginPath();
+            stairContext.moveTo(...projected[a]);
+            stairContext.lineTo(...projected[b]);
+            stairContext.stroke();
+          });
+        } else {
+          stairContext.stroke();
+        }
       }
       // Restore only the short tread edges on the visible side. Drawing the
       // entire side outline here would reveal back edges through the stairs.
