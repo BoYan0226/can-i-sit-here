@@ -25,7 +25,7 @@
     .photo-card img { display:block; width:100%; height:100%; min-height:0; object-fit:cover; filter:grayscale(1) contrast(1.12); }
     .photo-credit { margin:0; font-size:clamp(9px,.7vw,12px); letter-spacing:.08em; text-transform:uppercase; opacity:var(--credit-reveal,0); transform:translate3d(0,calc((1 - var(--credit-reveal,0))*2.5rem),0); will-change:transform,opacity; }
     .line { position:absolute; left:var(--left); top:var(--top); width:var(--width); margin:0; font-size:var(--poem-font,clamp(16px,1.7vw,30px)); line-height:1.15; letter-spacing:-.025em; white-space:nowrap; transform:translate3d(var(--enter,110vw),0,0); will-change:transform; }
-    .line span { display:block; width:100%; text-align-last:justify; }
+    .line span { display:block; width:100%; text-align:left; }
     .ending, .return-page { background:var(--paper); visibility:hidden; }
     .ending { display:flex; flex-direction:column; justify-content:center; padding:8vw; }
     .ending h2 { margin:0; font-size:clamp(32px,5.6vw,90px); font-weight:500; line-height:1.12; letter-spacing:-.055em; }
@@ -60,18 +60,18 @@
     <div class="cube-stage">
       <div class="page-cube">
         <div class="poem cube-face" aria-label="An excerpt adapted from the editor's letter">
-      <p class="line" style="--left:15%;--top:21%;--width:55%"><span>A staircase takes us from one place to another.</span></p>
-      <p class="line" style="--left:15%;--top:25.5%;--width:55%"><span>But sometimes, we stop halfway.</span></p>
-      <p class="line" style="--left:15%;--top:30%;--width:55%"><span>We sit beside a friend, set down a bag, and start talking.</span></p>
-      <p class="line" style="--left:23%;--top:36%;--width:55%"><span>The steps become a place to stay.</span></p>
-      <p class="line" style="--left:23%;--top:40.5%;--width:55%"><span>Nothing has been added. Nothing has been rebuilt.</span></p>
-      <p class="line" style="--left:23%;--top:45%;--width:55%"><span>A different use begins with the simple act of sitting down.</span></p>
-      <p class="line" style="--left:31%;--top:51%;--width:55%"><span>Across the city, people make these small adjustments.</span></p>
-      <p class="line" style="--left:31%;--top:55.5%;--width:55%"><span>A low wall becomes a seat. An edge becomes a meeting place.</span></p>
-      <p class="line" style="--left:31%;--top:60%;--width:55%"><span>What was already there begins to offer something more.</span></p>
-      <p class="line" style="--left:39%;--top:66%;--width:55%"><span>Can I Sit Here? begins with noticing these moments.</span></p>
-      <p class="line" style="--left:39%;--top:70.5%;--width:55%"><span>The city gives us spaces, and we give them uses.</span></p>
-      <p class="line" style="--left:39%;--top:75%;--width:55%"><span>Sometimes, a place changes when we decide to stay.</span></p>
+      <p class="line" style="--left:15%;--top:21%;--width:55%"><span>A staircase takes us from one place to another, but sometimes we stop halfway.</span></p>
+      <p class="line" style="--left:15%;--top:25.5%;--width:55%"><span>We sit beside a friend, set down a bag, and begin a conversation. The steps still</span></p>
+      <p class="line" style="--left:15%;--top:30%;--width:55%"><span>lead somewhere, yet for a little while they become a place to spend time together.</span></p>
+      <p class="line" style="--left:23%;--top:36%;--width:55%"><span>Nothing has been added or rebuilt. The same steps that carry us through the city</span></p>
+      <p class="line" style="--left:23%;--top:40.5%;--width:55%"><span>also give us somewhere to sit. A different use begins with an ordinary gesture:</span></p>
+      <p class="line" style="--left:23%;--top:45%;--width:55%"><span>slowing down, taking a seat, and making room for someone to sit down beside us.</span></p>
+      <p class="line" style="--left:31%;--top:51%;--width:55%"><span>Across the city, people make these small adjustments to the spaces around them.</span></p>
+      <p class="line" style="--left:31%;--top:55.5%;--width:55%"><span>A low wall becomes a seat, an edge becomes a meeting place, and a flight of steps</span></p>
+      <p class="line" style="--left:31%;--top:60%;--width:55%"><span>holds a conversation. What was already there begins to offer something more.</span></p>
+      <p class="line" style="--left:39%;--top:66%;--width:55%"><span>Can I Sit Here? begins with noticing these moments in the places we pass each day.</span></p>
+      <p class="line" style="--left:39%;--top:70.5%;--width:55%"><span>The city gives us spaces, and we give them uses through the things we do together.</span></p>
+      <p class="line" style="--left:39%;--top:75%;--width:55%"><span>The steps still lead somewhere. Sometimes, a place changes when we decide to stay.</span></p>
         </div>
         <section class="next-page cube-face" aria-label="Conversations on New York steps">
           <div class="photo-sequence" aria-label="Four photographs of people sitting and talking on steps">
